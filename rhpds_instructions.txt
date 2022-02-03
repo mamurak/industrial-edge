@@ -1,0 +1,40 @@
+1. Machine sensor pods are crash-looping (Stormshift). Fix:
+    in project `manuela-stormshift-machine-sensor`
+    in configmaps `machine-sensor-1` and `machine-sensor-2`
+    in value of key `MQTT_HOSTNAME`
+    replace `edge` by `cluster` (factory cluster reference)
+
+2. Inference pod unable to pull image. Fix:
+    in project
+    in `Seldon Operator`
+    in SeldonDeployment `anomaly-detection`
+    in spec.predictors[0].componentSpecs[0].spec.containers[0].image
+    replace `manuela-tst-all` by `manuela-stormshift-messaging` (image stream reference)
+
+3. Kafka-to-S3 integration pods unable to start. Fix:
+    increase worker node count from 2 to 3
+    install OpenShift Container Storage operator
+    in projects `factory-s3-store` and `manuela-data-lake-central-s3-store`
+    provide S3 credentials within secret `s3-secret`
+
+4. JupyterHub pods not running. Fix:
+    in file `industrial-edge/charts/datacenter/opendatahub/templates/odh-kfdef.yaml`
+    udpate spec.repos:
+    - name: kf-manifests
+      uri: 'https://github.com/opendatahub-io/manifests/tarball/v1.3-openshift'
+    - name: manifests
+      uri: 'https://github.com/opendatahub-io/odh-manifests/tarball/v1.1.1'
+    push changes
+
+5. Anomaly detection not running. Fix:
+    in file `industrial-edge/charts/datacenter/manuela-tst/values.yaml`
+    update subscriptions.version.seldon:
+      v1.12.0
+    push changes
+
+6. Sensor data not shown in line dashboard (Stormshift). Fix:
+    in project `manuela-stormshift-line-dashboard`
+    in configmap `line-dashboard-configmap`
+    in data.config.json
+    in value of key `websocketHost`
+    replace `edge` by `cluster` (factory cluster reference)
