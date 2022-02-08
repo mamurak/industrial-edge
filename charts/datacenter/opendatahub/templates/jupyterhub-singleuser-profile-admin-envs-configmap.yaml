@@ -1,0 +1,9 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: jupyterhub-singleuser-profile-admin-envs
+  labels:
+    app: jupyterhub
+data:
+  OPS_REPO_LOCATION: 'https://gitea.apps.cluster.local/lab-user/industrial-edge'
+  S3_ENDPOINT_URL: 'http://s3.openshift-storage.svc.cluster.local/'
