@@ -38,3 +38,27 @@
     in data.config.json
     in value of key `websocketHost`
     replace `edge` by `cluster` (factory cluster reference)
+
+
+Set up MLOps scenario
+
+1. Set up ODF
+
+2. set environment variables when provisioning notebook:
+    S3_ACCESS_KEY
+    S3_SECRET_KEY
+    GIT_USER
+    GIT_PASSWORD
+
+3. set Runtime image in Elyra workspace
+    generic-datascience
+    quay.io/thoth-station/s2i-generic-data-science-notebook
+
+4. ensure runtime image set in demo.pipeline
+
+5. set up Elyra runtime
+    http://ml-pipeline-ui.kubeflow.svc.cluster.local
+    Tekton pipeline engine
+    http://s3.openshift-storage.svc.cluster.local/
+    S3 credentials
+    S3 bucket name
