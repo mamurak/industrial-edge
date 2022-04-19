@@ -43,11 +43,20 @@
     replace `edge` by `cluster` (factory cluster reference)
 
 
+
+Get ArgoCD credentials
+
+ARGO_CMD=`oc get secrets -A -o jsonpath='{range .items[*]}{"oc get -n "}{.metadata.namespace}{" routes; oc -n "}{.metadata.namespace}{" extract secrets/"}{.metadata.name}{" --to=-\\n"}{end}' | grep gitops-cluster`
+CMD=`echo $ARGO_CMD | sed 's|- oc|-;oc|g'`
+eval $CMD
+
+
+
 Set up MLOps scenario
 
 1. Set up ODF
 
-2. set environment variables when provisioning notebook:
+2. set environment variables when provisioning notebook (optional):
     S3_ACCESS_KEY
     S3_SECRET_KEY
     GIT_USER
@@ -60,8 +69,18 @@ Set up MLOps scenario
 4. ensure runtime image set in demo.pipeline
 
 5. set up Elyra runtime
-    http://ml-pipeline-ui.kubeflow.svc.cluster.local
+    http://ml-pipeline-ui.kubeflow.svc.cluster.local (or external)
     Tekton pipeline engine
-    http://s3.openshift-storage.svc.cluster.local/
+    http://s3.openshift-storage.svc.cluster.local/ (or external)
     S3 credentials
     S3 bucket name
+
+6. clone ops repo
+
+7. update anomaly-detection manifests
+
+8. push changes
+
+9. deploy seldon-rclone-secret.yaml
+
+10. ensure TARGET REVISION is set to "main" in ArgoCD application
