@@ -25,3 +25,5 @@ global:
     clustername: PLAINTEXT
     domain: PLAINTEXT
 
+  manuela-tst-all:
+    namespace: manuela-tst-all
