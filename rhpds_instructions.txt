@@ -63,8 +63,8 @@ Set up MLOps scenario
     GIT_PASSWORD
 
 3. set Runtime image in Elyra workspace
-    generic-datascience
-    quay.io/thoth-station/s2i-generic-data-science-notebook
+    ml-pipeline-runtime
+    quay.io/mmurakam/industrial-edge-ml-pipeline-image:v0.2.0
 
 4. ensure runtime image set in demo.pipeline
 
