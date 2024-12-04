@@ -1,48 +1,41 @@
-BOOTSTRAP=1
-ARGO_TARGET_NAMESPACE=manuela-ci
-PATTERN=industrial-edge
-COMPONENT=datacenter
-SECRET_NAME="argocd-env"
-TARGET_REPO=$(shell git remote show origin | grep Push | sed -e 's/.*URL://' -e 's%:[a-z].*@%@%' -e 's%:%/%' -e 's%git@%https://%' )
-CHART_OPTS=-f common/examples/values-secret.yaml -f values-global.yaml -f values-datacenter.yaml --set global.targetRevision=main --set global.valuesDirectoryURL="https://github.com/pattern-clone/pattern/raw/main/" --set global.pattern="industrial-edge" --set global.namespace="pattern-namespace"
-
 .PHONY: default
 default: show
 
+.PHONY: help
+# No need to add a comment here as help is described in common/
+##@ Pattern tasks
+
+help:
+	@make -f common/Makefile MAKEFILE_LIST="Makefile common/Makefile" help
+
 %:
-	echo "Delegating $* target"
 	make -f common/Makefile $*
 
-install: deploy
-ifeq ($(BOOTSTRAP),1)
-	make secret
-	make sleep-seed
-endif
+.PHONY: install
+install: operator-deploy post-install ## installs the pattern, inits the vault and loads the secrets
+	@echo "Installed"
 
-secret:
-	make -f common/Makefile \
-		PATTERN=$(PATTERN) TARGET_NAMESPACE=$(ARGO_TARGET_NAMESPACE) \
-		SECRET_NAME=$(SECRET_NAME) COMPONENT=$(COMPONENT) argosecret
+.PHONY: post-install
+post-install: ## Post-install tasks
+	make load-secrets
+	@echo "Done"
 
-sleep:
-	scripts/sleep-seed.sh
+.PHONY: check-pipeline-resources
+check-pipeline-resources: ## wait for all seed resources to be present
+	scripts/check-pipeline-resources.sh
 
-sleep-seed: sleep seed
-	true
-
-seed:
+.PHONY: seed
+seed: check-pipeline-resources ## run the seed pipeline (build all component, push to all env, no pr)
 	oc create -f charts/datacenter/pipelines/extra/seed-run.yaml
 
-build-and-test:
-	oc create -f charts/datacenter/pipelines/extra/build-and-test-run.yaml
+.PHONY: build-and-test-iot-consumer
+build-and-test-iot-consumer: ## run iot consumer pipeline (build, test, push to manuela-tst-all, pr for prod)
+	oc create -f charts/datacenter/pipelines/extra/build-and-test-iot-consumer.yaml
 
-build-and-test-iot-anomaly-detection:
-	oc create -f charts/datacenter/pipelines/extra/build-and-test-run-iot-anomaly-detection.yaml
+.PHONY: build-and-test-iot-frontend
+build-and-test-iot-frontend: ## run iot frontend pipeline (build, test, push to manuela-tst-all, pr for prod)
+	oc create -f charts/datacenter/pipelines/extra/build-and-test-iot-frontend.yaml
 
-build-and-test-iot-consumer:
-	oc create -f charts/datacenter/pipelines/extra/build-and-test-run-iot-consumer.yaml
-
-test:
-	make -f common/Makefile CHARTS="$(wildcard charts/datacenter/*)" PATTERN_OPTS="-f values-datacenter.yaml" test
-	make -f common/Makefile CHARTS="$(wildcard charts/factory/*)" PATTERN_OPTS="-f values-factory.yaml" test
-
+.PHONY: build-and-test-iot-software-sensor
+build-and-test-iot-software-sensor: ## run iot software-sensor pipeline (build, test, push to manuela-tst-all, pr for prod)
+	oc create -f charts/datacenter/pipelines/extra/build-and-test-iot-software-sensor.yaml

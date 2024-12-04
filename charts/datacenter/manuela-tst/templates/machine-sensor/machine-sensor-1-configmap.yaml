@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: machine-sensor-1
 data:
-  #MQTT_HOSTNAME: "broker-amq-mqtt-all-0-svc-rte-manuela-tst-all.apps.{{ .Values.global.datacenter.clustername }}.{{ .Values.global.datacenter.domain }}"
+  #MQTT_HOSTNAME: "broker-amq-mqtt-all-0-svc-rte-manuela-tst-all.{{ .Values.global.localClusterDomain }}
   #broker-amq-mqtt-all-0-svc-rte-manuela-tst-all
   #MQTT_HOSTNAME: "broker-amq-mqtt-all-0-svc"
   #MQTT_HOSTNAME: "broker-amq-mqtt-all-0-svc.manuela-tst-all.svc"
@@ -17,7 +17,6 @@ data:
   MACHINE_ID: "floor-1-line-1-extruder-1"
 
   MQTT_HOSTNAME: "broker-amq-mqtt-all-0-svc"
-  MQTT_PASSWORD: "iotuser"
   MQTT_PORT: "61616"
   MQTT_TLSSNI: "false"
   MQTT_USER: "iotuser"
@@ -47,7 +46,7 @@ data:
   SENSOR_TEMPERATURE_MINRANGE: "45"
   SENSOR_TEMPERATURE_STARTMAX: "50"
   SENSOR_TEMPERATURE_STARTMIN: "50"
-  
+
   SENSOR_VIBRATION_ENABLED: "true"
   SENSOR_VIBRATION_FREQUENC: "5"
   SENSOR_VIBRATION_MAXITERATION: "1"

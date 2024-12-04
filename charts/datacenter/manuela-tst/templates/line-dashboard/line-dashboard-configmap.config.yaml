@@ -5,10 +5,10 @@ metadata:
   namespace: manuela-tst-all
   labels:
     app.kubernetes.io/instance: manuela-tst-all
-data: 
+data:
   "config.json": |-
     {
-      "websocketHost": "http://messaging-manuela-tst-all.apps.{{ .Values.global.datacenter.clustername }}.{{ .Values.global.datacenter.domain }}",
+      "websocketHost": "http://messaging-manuela-tst-all.{{ .Values.global.localClusterDomain }}",
       "websocketPath": "/api/service-web/socket",
       "SERVER_TIMEOUT": "20000"
     }

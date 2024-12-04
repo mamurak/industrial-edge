@@ -7,17 +7,21 @@ spec:
   lookupPolicy:
     local: true
   tags:
-  - name: 0.3.1-20
+  - name: {{ .Values.machine_sensor.bootstrap_tag | quote }}
     from:
       kind: DockerImage
-      name: quay.io/ipbabble/iot-software-sensor:0.3.1-20
+      name: {{ .Values.machine_sensor.bootstrap_image }}
     importPolicy: {}
     referencePolicy:
       type: Local
-  - name: 0.3.1-21
+{{- range .Values.machine_sensor.built_tags }}
+  - name: {{ . | quote }}
     from:
       kind: DockerImage
-      name: quay.io/ipbabble/iot-software-sensor:0.3.1-21
-    importPolicy: {}
+      name: "{{ include "imageRegistryHostname" $ }}/{{ include "imageRegistryAccount" $ }}/{{ $.Values.machine_sensor.repo_name }}:{{ . }}"
+    importPolicy: {
+      insecure: true
+    }
     referencePolicy:
       type: Local
+{{- end }}

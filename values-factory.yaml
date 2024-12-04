@@ -1,70 +1,58 @@
-site:
+clusterGroup:
   name: factory
+  isHubCluster: false
 
   namespaces:
-  - factory-lake
-  - factory-s3-store
-  - factory-mirror-maker
+  - golang-external-secrets
   - manuela-stormshift-line-dashboard
   - manuela-stormshift-machine-sensor
   - manuela-stormshift-messaging
-  - manuela-factory-ml-workspace
- 
-  operatorgroupExcludes:
-  - manuela-factory-ml-workspace
+  - manuela-inference:
+      operatorGroup: true
+      labels:
+        modelmesh-enabled: 'true'
+        opendatahub.io/dashboard: 'true'
+  - redhat-ods-operator:
+      operatorGroup: true
+      targetNamespaces:
 
   subscriptions:
-  - name: opendatahub-operator
-    source: community-operators
-    csv: opendatahub-operator.v1.1.0
-
-  - name: seldon-operator
-    namespace: manuela-stormshift-messaging
-    source: community-operators
-    csv: seldon-operator.v1.7.0
-
   - name: amq-streams
     namespace: manuela-stormshift-messaging
-    channel: amq-streams-1.7.x
-    csv: amqstreams.v1.7.1
 
-  - name: amq-streams
-    namespace: factory-lake
-    channel: amq-streams-1.7.x
-    csv: amqstreams.v1.7.1
-
-  - name: amq-broker
+  - name: amq-broker-rhel8
     namespace: manuela-stormshift-messaging
-    channel: 7.8.x
-    csv: amq-broker-operator.v7.8.1-opr-3
 
   - name: red-hat-camel-k
     namespace: manuela-stormshift-messaging
-    channel: 1.4.x
-    csv: red-hat-camel-k-operator.v1.4.0
 
-  - name: red-hat-camel-k
-    namespace: factory-s3-store
-    channel: 1.4.x
+  - name: rhods-operator
+    channel: alpha
+    namespace: redhat-ods-operator
 
   projects:
   - factory
 
   applications:
-  - name: datalake
-    project: factory
-    path: charts/factory/manuela-data-lake
+    eso:
+      name: golang-external-secrets
+      namespace: golang-external-secrets
+      project: factory
+      chart: golang-external-secrets
+      chartVersion: 0.1.*
 
-  - name: stormshift
-    project: factory
-    path: charts/factory/manuela-stormshift
-    plugin:
-      name: helm-with-kustomize
+    stormshift:
+      name: stormshift
+      project: factory
+      path: charts/factory/manuela-stormshift
+      extraValueFiles:
+        - /overrides/values-prod-imagedata.yaml
+      ignoreDifferences:
+      - group: image.openshift.io
+        kind: ImageStream
+        jsonPointers:
+        - /spec/tags
 
-  - name: odh
-    namespace: manuela-factory-ml-workspace
-    project: factory
-    path: charts/datacenter/opendatahub
 
 #
 #  To have apps in multiple flavors, use namespaces and use helm overrides as appropriate
@@ -77,15 +65,8 @@ site:
 #    targetRevision: stable
 #    overrides:
 #    - name: myparam
-#      value: myparam 
-#  
-#  - name: pipelines
-#    namespace: staging
-#    project: datacenter
-#    path: applications/pipeline
-#    repoURL: https://github.com/you/applications.git
-#    targetRevision: main
-#  
+#      value: myparam
+#
 #   Additional applications
 #   Be sure to include additional resources your apps will require
 #   +X machines

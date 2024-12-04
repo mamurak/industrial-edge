@@ -7,17 +7,21 @@ spec:
   lookupPolicy:
     local: true
   tags:
-  - name: 0.3.2-39
+  - name: {{ .Values.iot_consumer.bootstrap_tag | quote }}
     from:
       kind: DockerImage
-      name: quay.io/ipbabble/iot-consumer:0.3.2-39
+      name: {{ .Values.iot_consumer.bootstrap_image }}
     importPolicy: {}
     referencePolicy:
       type: Local
-  - name: 0.3.2-40
+{{- range .Values.iot_consumer.built_tags }}
+  - name: {{ $.Values.iot_consumer.tag | quote }}
     from:
       kind: DockerImage
-      name: quay.io/ipbabble/iot-consumer:0.3.2-40
-    importPolicy: {}
+      name: "{{ include "imageRegistryHostname" $ }}/{{ include "imageRegistryAccount" $ }}/{{ $.Values.iot_consumer.repo_name }}:{{ . }}"
+    importPolicy: {
+      insecure: true
+    }
     referencePolicy:
       type: Local
+{{- end }}

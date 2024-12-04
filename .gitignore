@@ -1,3 +1,6 @@
 *~
-values-secret.yaml
-charts/datacenter/opendatahub/repos
+.*.swp
+.*.swo
+values-secret*
+super-linter.log
+tests/interop/__pycache__*
